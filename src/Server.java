@@ -17,11 +17,16 @@ public class Server {
     }
 
     public void sendResponseToClient(String msg) {
-        if (msg.equals("help")) {
-            out.println("Call help");
-        }
-        if (msg.equals("get")) {
-            out.println("Call get");
+        switch (msg) {
+            case "help" -> {
+                out.println("Call help\nanother line");
+            }
+            case "get" -> {
+                out.println("Call get");
+            }
+            case "bye" -> {
+                out.println("bye");
+            }
         }
     }
 
@@ -35,12 +40,17 @@ public class Server {
     public static void main(String[] args) throws IOException {
         Server server = new Server();
         server.initServer(server.PORT);
-        server.sendResponseToClient(server.in.readLine());
+
+        while (true) {
+            String msg = server.in.readLine();
+            server.sendResponseToClient(msg);
+            if (msg.equals("bye")) break;
+        }
+
+        server.closeServer();
 
         KeyValueStore kvs = new KeyValueStore();
         kvs.put("OK", "1");
         kvs.put("OKOK", "2");
-
-        server.closeServer();
     }
 }

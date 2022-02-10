@@ -17,7 +17,10 @@ public class Client {
 
     public String sendMessageToServer(String msg) throws IOException {
         out.println(msg);
-        return in.readLine();
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = in.readLine()) != null) sb.append(line);
+        return sb.toString();
     }
 
     public void closeClient() throws IOException {
@@ -40,16 +43,16 @@ public class Client {
         client.connectToServer(hostname, client.PORT);
         System.out.println("Welcome to the KeyValue Service");
 
+
         while (true) {
             System.out.print("KeyValue Service> ");
             String msg = scanner.nextLine();
-
-            if (msg.equals("bye")) break;
-
             String res = client.sendMessageToServer(msg);
+            if (res.equals("bye")) break;
             System.out.println(res);
         }
 
         client.closeClient();
+        System.out.println("See you later.");
     }
 }
