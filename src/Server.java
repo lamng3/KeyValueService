@@ -17,16 +17,8 @@ public class Server {
     }
 
     public void sendResponseToClient(String msg) {
-        switch (msg) {
-            case "help" -> {
-                out.println("Call help\nanother line");
-            }
-            case "get" -> {
-                out.println("Call get");
-            }
-            case "bye" -> {
-                out.println("bye");
-            }
+        if (msg.equals("help")) {
+            out.println("Call help");
         }
     }
 
@@ -41,16 +33,18 @@ public class Server {
         Server server = new Server();
         server.initServer(server.PORT);
 
-        while (true) {
+        boolean open = true;
+
+        while (open) {
             String msg = server.in.readLine();
             server.sendResponseToClient(msg);
-            if (msg.equals("bye")) break;
+            if (msg.equals("bye")) open = false;
         }
-
-        server.closeServer();
 
         KeyValueStore kvs = new KeyValueStore();
         kvs.put("OK", "1");
         kvs.put("OKOK", "2");
+
+        server.closeServer();
     }
 }

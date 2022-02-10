@@ -36,19 +36,21 @@ public class Client {
         Scanner scanner = new Scanner(System.in);
         String hostname = scanner.nextLine();
 
-        System.out.println(hostname);
+//        System.out.println(hostname);
 
         System.out.println("Please wait while I connect you...");
         Client client = new Client();
         client.connectToServer(hostname, client.PORT);
         System.out.println("Welcome to the KeyValue Service");
 
+        boolean open = true;
 
-        while (true) {
+        while (open) {
             System.out.print("KeyValue Service> ");
             String msg = scanner.nextLine();
+
             String res = client.sendMessageToServer(msg);
-            if (res.equals("bye")) break;
+            if (res.equals("bye")) open = false;
             System.out.println(res);
         }
 
