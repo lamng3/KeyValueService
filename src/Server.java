@@ -40,5 +40,7 @@ public class Server {
         KeyValueStore kvs = new KeyValueStore();
         kvs.put("OK", "1");
         kvs.put("OKOK", "2");
+
+        server.closeServer();
     }
 }

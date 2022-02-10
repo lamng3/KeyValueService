@@ -28,10 +28,12 @@ public class Client {
 
     public static void main(String[] args) throws IOException {
         System.out.println("Welcome to the KeyValue Service Client");
-        System.out.println("Enter the IP address or Hostname of the server: ");
+        System.out.print("Enter the IP address or Hostname of the server: ");
 
         Scanner scanner = new Scanner(System.in);
-        String hostname = scanner.next();
+        String hostname = scanner.nextLine();
+
+        System.out.println(hostname);
 
         System.out.println("Please wait while I connect you...");
         Client client = new Client();
@@ -40,12 +42,14 @@ public class Client {
 
         while (true) {
             System.out.print("KeyValue Service> ");
-            String msg = scanner.next();
+            String msg = scanner.nextLine();
 
             if (msg.equals("bye")) break;
 
             String res = client.sendMessageToServer(msg);
             System.out.println(res);
         }
+
+        client.closeClient();
     }
 }
