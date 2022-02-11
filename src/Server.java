@@ -2,7 +2,7 @@ import java.io.*;
 import java.net.*;
 
 public class Server {
-    private final int PORT = 8080;
+    private final int PORT = 5000;
     private ServerSocket serverSocket;
     private Socket socket;
     private PrintWriter out;
@@ -17,9 +17,18 @@ public class Server {
     }
 
     public void sendResponseToClient(String msg) {
-        if (msg.equals("help")) {
-            out.println("Call help");
+        switch (msg) {
+            case "help" -> {
+                out.println("Call help");
+            }
+            case "bye" -> {
+                out.println("bye");
+            }
+            default -> {
+                out.println("Invalid command: \"" + msg + "\"");
+            }
         }
+        out.flush();
     }
 
     public void closeServer() throws IOException {
@@ -30,6 +39,10 @@ public class Server {
     }
 
     public static void main(String[] args) throws IOException {
+        KeyValueStore kvs = new KeyValueStore();
+        kvs.put("OK", "1");
+        kvs.put("OKOK", "2");
+
         Server server = new Server();
         server.initServer(server.PORT);
 
@@ -40,10 +53,6 @@ public class Server {
             server.sendResponseToClient(msg);
             if (msg.equals("bye")) open = false;
         }
-
-        KeyValueStore kvs = new KeyValueStore();
-        kvs.put("OK", "1");
-        kvs.put("OKOK", "2");
 
         server.closeServer();
     }

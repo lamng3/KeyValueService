@@ -1,26 +1,60 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.regex.*;
 
 public class Client {
-    private final int PORT = 8080;
+    private final int PORT = 5000;
+    private final String LOCALHOST_IP = "172.19.95.248";
+    private final String IPv4_REGEX =
+                    "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
+                    "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
+                    "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
+                    "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
+    private final Pattern IPv4_PATTERN = Pattern.compile(IPv4_REGEX);
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
 
-    public void connectToServer(String hostname, int port) throws IOException {
-        if (hostname.equals("localhost")) hostname = InetAddress.getLocalHost().getHostAddress();
-        socket = new Socket(hostname, port);
-        out = new PrintWriter(socket.getOutputStream(), true);
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+    private String invalidIPAndHostnameError = "IP address or Hostname \"%s\" is not valid ...";
+
+    public boolean connectToServer(String hostname, int port) throws IOException {
+        if (hostname.equals("localhost")) hostname = Inet4Address.getLocalHost().getHostAddress();
+        else if (!IPv4_PATTERN.matcher(hostname).matches()) {
+            try {
+                hostname = Inet4Address.getByName(hostname).getHostAddress();
+            }
+            catch (UnknownHostException e) {
+//                System.out.println("Cannot find ip of \"" + hostname + "\"");
+                System.out.printf(invalidIPAndHostnameError, hostname);
+                return false;
+            }
+        }
+
+        System.out.println("ip: " + hostname);
+
+        if (!IPv4_PATTERN.matcher(hostname).matches()) {
+            System.out.printf(invalidIPAndHostnameError, hostname);
+            return false;
+        }
+
+        try {
+            socket = new Socket(hostname, port);
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        }
+        catch (ConnectException e) {
+//            System.out.println("Cannot connect to \"" + hostname + "\"");
+            System.out.printf(invalidIPAndHostnameError, hostname);
+            return false;
+        }
+
+        return true;
     }
 
     public String sendMessageToServer(String msg) throws IOException {
         out.println(msg);
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = in.readLine()) != null) sb.append(line);
-        return sb.toString();
+        return in.readLine();
     }
 
     public void closeClient() throws IOException {
@@ -31,30 +65,35 @@ public class Client {
 
     public static void main(String[] args) throws IOException {
         System.out.println("Welcome to the KeyValue Service Client");
-        System.out.print("Enter the IP address or Hostname of the server: ");
 
+        System.out.print("Enter the IP address or Hostname of the server: ");
         Scanner scanner = new Scanner(System.in);
         String hostname = scanner.nextLine();
 
-//        System.out.println(hostname);
-
         System.out.println("Please wait while I connect you...");
         Client client = new Client();
-        client.connectToServer(hostname, client.PORT);
-        System.out.println("Welcome to the KeyValue Service");
+        boolean connected = client.connectToServer(hostname, client.PORT);
 
-        boolean open = true;
+        if (connected) {
+            System.out.println("Welcome to the KeyValue Service");
 
-        while (open) {
-            System.out.print("KeyValue Service> ");
-            String msg = scanner.nextLine();
+            boolean open = true;
 
-            String res = client.sendMessageToServer(msg);
-            if (res.equals("bye")) open = false;
-            System.out.println(res);
+            while (open) {
+                System.out.print("KeyValue Service> ");
+                String msg = scanner.nextLine();
+
+                String res = client.sendMessageToServer(msg);
+                System.out.println(res);
+
+                if (res.equals("bye")) open = false;
+            }
+
+            client.closeClient();
+            System.out.println("See you later.");
         }
-
-        client.closeClient();
-        System.out.println("See you later.");
+//        else {
+//            System.out.println("IP address or Hostname \"" + hostname + "\" is not valid ...");
+//        }
     }
 }

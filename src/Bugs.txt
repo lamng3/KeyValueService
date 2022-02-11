@@ -1,3 +1,10 @@
 Connection reset after first call to server (resolved by while loop)
 Cannot show multiple lines on client side
 Bug of not showing the message when not autoFlush is that we are not flushing the message
+
+if we set open to false before printing out the response from server,
+the response may not be shown on the screen
+
+Cannot connect to other host other than localhost (resolved by adding a regex matcher check)
+
+how to enable re-enter ip address or hostname
