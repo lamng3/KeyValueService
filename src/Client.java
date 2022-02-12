@@ -5,7 +5,7 @@ import java.util.regex.*;
 
 public class Client {
     private final int PORT = 5000;
-    private final String LOCALHOST_IP = "172.19.95.248";
+//    private final String LOCALHOST_IP = "172.19.95.248";
     private final String IPv4_REGEX =
                     "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
                     "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
@@ -31,7 +31,7 @@ public class Client {
             }
         }
 
-        System.out.println("ip: " + hostname);
+//        System.out.println("ip: " + hostname);
 
         if (!IPv4_PATTERN.matcher(hostname).matches()) {
             System.out.printf(invalidIPAndHostnameError, hostname);
@@ -54,13 +54,7 @@ public class Client {
 
     public String sendMessageToServer(String msg) throws IOException {
         out.println(msg);
-        StringBuilder res = new StringBuilder();
-        String line;
-        while ((line = in.readLine()) != null) {
-            System.out.println(line);
-            res.append(line);
-        }
-        return res.toString();
+        return in.readLine();
     }
 
     public void closeClient() throws IOException {
@@ -88,6 +82,7 @@ public class Client {
                 String msg = scanner.nextLine().trim();
 
                 String res = client.sendMessageToServer(msg);
+
                 if (res.equals("bye")) break;
                 System.out.println(res);
             }

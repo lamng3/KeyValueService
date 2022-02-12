@@ -36,15 +36,19 @@ public class KeyValueStore {
 
     /**
      * Retrieve all the key-value pairs from the key-value store
+     * @return list of all the key-value pairs from the key-value store
      */
-    public void mappings() {
+    public List<String> mappings() {
+        List<String> mps = new ArrayList<>();
         for (Map.Entry<String, Integer> e : map.entrySet()) {
-            System.out.println(e.getKey() + " -> " + e.getValue());
+            mps.add("\"" + e.getKey() + " -> " + e.getValue() + "\"");
         }
+        return mps;
     }
 
     /**
      * Retrieve all the keys from the key-value store
+     * @return list of keys of the key-value store
      */
     public List<String> keyset() {
         List<String> keys = new ArrayList<>();
@@ -56,6 +60,7 @@ public class KeyValueStore {
 
     /**
      * Retrieve all the values from the key-value store
+     * @return list of values of the key-value store
      */
     public List<Integer> values() {
         List<Integer> vals = new ArrayList<>();

@@ -11,6 +11,7 @@ public class Server {
     private final KeyValueStore kvs;
 
     private final HashMap<String, Integer> messageTypes;
+    private final String callHelp = "help    get    put    mappings    keyset    values    bye";
 
     public Server() {
         this.kvs = new KeyValueStore();
@@ -44,6 +45,8 @@ public class Server {
         }
         String message = sb.toString().trim();
         params.add(message);
+
+        if (!messageTypes.containsKey(message)) return params;
 
         // for specific methods, extract different number of elements
         // we now have start, we now traverse from end to get the number
@@ -93,8 +96,7 @@ public class Server {
 
         switch (params.get(0)) {
             case "help" -> {
-                out.println("help");
-                out.println("another line");
+                out.println(callHelp);
             }
             case "get" -> {
                 int value = kvs.get(params.get(1));
@@ -114,7 +116,8 @@ public class Server {
                 }
             }
             case "mappings" -> {
-
+                List<String> mps = kvs.mappings();
+                out.println(Arrays.toString(mps.toArray()));
             }
             case "keyset" -> {
                 List<String> keys = kvs.keyset();
