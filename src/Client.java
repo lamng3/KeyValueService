@@ -77,16 +77,13 @@ public class Client {
         if (connected) {
             System.out.println("Welcome to the KeyValue Service");
 
-            boolean open = true;
-
-            while (open) {
+            while (true) {
                 System.out.print("KeyValue Service> ");
-                String msg = scanner.nextLine();
+                String msg = scanner.nextLine().trim();
 
                 String res = client.sendMessageToServer(msg);
+                if (res.equals("bye")) break;
                 System.out.println(res);
-
-                if (res.equals("bye")) open = false;
             }
 
             client.closeClient();

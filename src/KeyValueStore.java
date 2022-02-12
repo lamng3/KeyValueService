@@ -4,7 +4,7 @@ import java.util.*;
 public class KeyValueStore {
 
     // hash-map containing the key-value store
-    private final HashMap<String, String> map;
+    private final HashMap<String, Integer> map;
 
     /**
      * Constructor creating the key-value store
@@ -18,7 +18,8 @@ public class KeyValueStore {
      * @param key the key that we need to access to the database
      * @return the value associated with the key
      */
-    public String get(String key) {
+    public int get(String key) {
+        if (!map.containsKey(key)) return -1;
         return map.get(key);
     }
 
@@ -29,7 +30,7 @@ public class KeyValueStore {
      * @param key the key that will be updated or added into KV store
      * @param value the value associated with the key
      */
-    public void put(String key, String value) {
+    public void put(String key, int value) {
         map.put(key, value);
     }
 
@@ -37,7 +38,7 @@ public class KeyValueStore {
      * Retrieve all the key-value pairs from the key-value store
      */
     public void mappings() {
-        for (Map.Entry<String, String> e : map.entrySet()) {
+        for (Map.Entry<String, Integer> e : map.entrySet()) {
             System.out.println(e.getKey() + " -> " + e.getValue());
         }
     }
@@ -45,18 +46,22 @@ public class KeyValueStore {
     /**
      * Retrieve all the keys from the key-value store
      */
-    public void keyset() {
-        for (Map.Entry<String, String> e : map.entrySet()) {
-            System.out.println(e.getKey());
+    public List<String> keyset() {
+        List<String> keys = new ArrayList<>();
+        for (Map.Entry<String, Integer> e : map.entrySet()) {
+            keys.add(e.getKey());
         }
+        return keys;
     }
 
     /**
      * Retrieve all the values from the key-value store
      */
-    public void values() {
-        for (Map.Entry<String, String> e : map.entrySet()) {
-            System.out.println(e.getValue());
+    public List<Integer> values() {
+        List<Integer> vals = new ArrayList<>();
+        for (Map.Entry<String, Integer> e : map.entrySet()) {
+            vals.add(e.getValue());
         }
+        return vals;
     }
 }

@@ -1,5 +1,7 @@
 Connection reset after first call to server (resolved by while loop)
-Cannot show multiple lines on client side
+
+[URGENT] Cannot show multiple lines on client side
+
 Bug of not showing the message when not autoFlush is that we are not flushing the message
 
 if we set open to false before printing out the response from server,
