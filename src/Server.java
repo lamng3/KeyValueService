@@ -8,13 +8,14 @@ public class Server {
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
-    private KeyValueStore kvs;
+    private final KeyValueStore kvs;
 
     private final HashMap<String, Integer> messageTypes;
 
     public Server() {
         this.kvs = new KeyValueStore();
         this.messageTypes = new HashMap<>();
+        messageTypes.put("help", 0);
         messageTypes.put("get", 1);
         messageTypes.put("put", 2);
         messageTypes.put("mappings", 0);
@@ -41,7 +42,7 @@ public class Server {
             sb.append(msg.charAt(i));
             i++;
         }
-        String message = sb.toString();
+        String message = sb.toString().trim();
         params.add(message);
 
         // for specific methods, extract different number of elements
@@ -49,23 +50,25 @@ public class Server {
         // if the message is put
         if (messageTypes.get(message) > 0) {
             int j = msg.length() - 1;
-            sb = new StringBuilder();
 
-            while (j >= 0 && msg.charAt(j) != ' ') {
-                sb.append(msg.charAt(j));
+            if (message.equals("put")) {
+                sb = new StringBuilder();
+                while (j >= 0 && msg.charAt(j) != ' ') {
+                    sb.append(msg.charAt(j));
+                    j--;
+                }
+                String value = sb.reverse().toString().trim();
+                params.add(value);
                 j--;
             }
-            String value = sb.toString();
-            params.add(value);
 
             sb = new StringBuilder();
             i++;
-            j--;
             while (i <= j) {
                 sb.append(msg.charAt(i));
                 i++;
             }
-            if (sb.length() > 0) params.add(sb.toString());
+            if (sb.length() > 0) params.add(sb.toString().trim());
         }
 
         return params;
@@ -73,21 +76,42 @@ public class Server {
 
     public boolean sendResponseToClient(String msg) {
         // for the simple input, that would be okay, but in general this will not work
+        if (msg.equals("")) {
+            out.println("No command found!");
+            return false;
+        }
         List<String> params = processMessage(msg);
-        if (!(params.size() == messageTypes.get(params.get(0)))) return false;
+        System.out.println(Arrays.toString(params.toArray()));
+        if (!messageTypes.containsKey(params.get(0))) {
+            out.println("Invalid command: \"" + msg + "\"");
+            return false;
+        }
+        if (!(params.size()-1 == messageTypes.get(params.get(0)))) {
+            out.println("Invalid command: \"" + msg + "\"");
+            return false;
+        }
 
         switch (params.get(0)) {
             case "help" -> {
-                out.println("Call help");
+                out.println("help");
+                out.println("another line");
             }
             case "get" -> {
                 int value = kvs.get(params.get(1));
                 if (value == -1) out.println("Cannot find key \"" + params.get(1) + "\" in the data store");
+                else out.println(value);
             }
             case "put" -> {
                 String key = params.get(2);
-                int value = Integer.parseInt(params.get(1));
-                kvs.put(key, value);
+                try {
+                    int value = Integer.parseInt(params.get(1));
+                    kvs.put(key, value);
+                    out.println("Ok.");
+                }
+                catch (NumberFormatException e) {
+                    out.println("Value \"" + params.get(1) + "\" is not valid");
+                    return false;
+                }
             }
             case "mappings" -> {
 
@@ -120,23 +144,20 @@ public class Server {
     }
 
     public static void main(String[] args) throws IOException {
-//        KeyValueStore kvs = new KeyValueStore();
-//        kvs.put("OK", 1);
-//        kvs.put("OKOK", 2);
-
         Server server = new Server();
 
-        String testMessage = "put abcd";
-        System.out.println(server.processMessage(testMessage).toString());
+//        String testMessage = "put abcd";
+//        System.out.println(server.processMessage(testMessage).toString());
+//        System.out.println(Integer.parseInt("a"));
 
         server.initServer(server.PORT);
 
-//        while (true) {
-//            String msg = server.in.readLine();
-//            boolean sentToClient = server.sendResponseToClient(msg);
-//            if (!sentToClient) System.out.println("Invalid message!");
-//            if (msg.equals("bye")) break;
-//        }
+        while (true) {
+            String msg = server.in.readLine();
+            boolean sentToClient = server.sendResponseToClient(msg);
+            if (!sentToClient) System.out.println("Invalid message to server!");
+            if (msg.equals("bye")) break;
+        }
 
         server.closeServer();
     }

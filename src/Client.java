@@ -16,7 +16,7 @@ public class Client {
     private PrintWriter out;
     private BufferedReader in;
 
-    private String invalidIPAndHostnameError = "IP address or Hostname \"%s\" is not valid ...";
+    private final String invalidIPAndHostnameError = "IP address or Hostname \"%s\" is not valid";
 
     public boolean connectToServer(String hostname, int port) throws IOException {
         if (hostname.equals("localhost")) hostname = Inet4Address.getLocalHost().getHostAddress();
@@ -44,8 +44,8 @@ public class Client {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         }
         catch (ConnectException e) {
-//            System.out.println("Cannot connect to \"" + hostname + "\"");
-            System.out.printf(invalidIPAndHostnameError, hostname);
+            System.out.println("Connection to \"" + hostname + "\" takes too long!");
+//            System.out.printf(invalidIPAndHostnameError, hostname);
             return false;
         }
 
@@ -54,7 +54,13 @@ public class Client {
 
     public String sendMessageToServer(String msg) throws IOException {
         out.println(msg);
-        return in.readLine();
+        StringBuilder res = new StringBuilder();
+        String line;
+        while ((line = in.readLine()) != null) {
+            System.out.println(line);
+            res.append(line);
+        }
+        return res.toString();
     }
 
     public void closeClient() throws IOException {
@@ -75,7 +81,7 @@ public class Client {
         boolean connected = client.connectToServer(hostname, client.PORT);
 
         if (connected) {
-            System.out.println("Welcome to the KeyValue Service");
+            System.out.println("Welcome to the KeyValue Service Client");
 
             while (true) {
                 System.out.print("KeyValue Service> ");
@@ -89,8 +95,5 @@ public class Client {
             client.closeClient();
             System.out.println("See you later.");
         }
-//        else {
-//            System.out.println("IP address or Hostname \"" + hostname + "\" is not valid ...");
-//        }
     }
 }
