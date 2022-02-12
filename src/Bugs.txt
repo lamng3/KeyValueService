@@ -1,12 +1,9 @@
-Connection reset after first call to server (resolved by while loop)
+[RESOLVED] Connection reset after first call to server (resolved by while loop)
+[RESOLVED] Cannot show multiple lines on client side (resolved by showing one line only)
+[REMOVED ISSUE] Bug of not showing the message when not autoFlush is that we are not flushing the message
+[REMOVED ISSUE] If we set open to false before printing out the response from server, the response may not be shown on the screen
+[RESOLVED] Cannot connect to other host other than localhost (resolved by adding a regex matcher check)
+[REMOVED ISSUE] how to enable re-enter ip address or hostname (may not need this)
 
-[URGENT] Cannot show multiple lines on client side
+[URGENT] Multi-threading and Multi-processing to serve multiple clients at the same time
 
-Bug of not showing the message when not autoFlush is that we are not flushing the message
-
-if we set open to false before printing out the response from server,
-the response may not be shown on the screen
-
-Cannot connect to other host other than localhost (resolved by adding a regex matcher check)
-
-how to enable re-enter ip address or hostname
