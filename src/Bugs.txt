@@ -6,4 +6,7 @@
 [REMOVED ISSUE] how to enable re-enter ip address or hostname (may not need this)
 
 [URGENT] Multi-threading and Multi-processing to serve multiple clients at the same time
+    - When Client connects to Server, we need to create a new Thread for it
+    - This happens maybe after the accept() method?
+    - And maybe we need multiple sockets instead of universal socket
 

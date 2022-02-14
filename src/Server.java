@@ -108,13 +108,17 @@ public class Server {
     /**
      * Initialize the server
      * @param port the port that will be used to communicate with client
-     * @throws IOException handle exceptions of creating server and accepting client's socket
      */
-    public void initServer(int port) throws IOException {
-        serverSocket = new ServerSocket(port);
-        socket = serverSocket.accept();
-        out = new PrintWriter(socket.getOutputStream(), true);
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+    public void initServer(int port) {
+        try {
+            serverSocket = new ServerSocket(port);
+            socket = serverSocket.accept();
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        }
+        catch (IOException e) {
+            System.out.println("Cannot start server!");
+        }
     }
 
     /**
@@ -205,13 +209,17 @@ public class Server {
 
     /**
      * Close the server socket & in and out pathways
-     * @throws IOException handle exceptions of closing the server with in & out pathways
      */
-    public void closeServer() throws IOException {
-        in.close();
-        out.close();
-        serverSocket.close();
-        socket.close();
+    public void closeServer() {
+        try {
+            in.close();
+            out.close();
+            serverSocket.close();
+            socket.close();
+        }
+        catch (IOException e) {
+            System.out.println("Cannot close the server!");
+        }
     }
 
     // Main method that will be used to execute Server side
@@ -221,6 +229,7 @@ public class Server {
         server.initServer(server.PORT);
 
         while (true) {
+
             // message read from the client
             String msg = server.in.readLine();
 

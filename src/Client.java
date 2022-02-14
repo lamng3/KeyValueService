@@ -38,22 +38,28 @@ public class Client {
     private final String invalidIPAndHostnameError = "IP address or Hostname \"%s\" is not valid";
 
     /**
-     * Constructor that creates a client
+     * Constructor for creating Client
      */
     public Client() {
 
     }
 
     /**
-     * Connect client to server
-     * @param hostname the hostname that will be connected to
-     * @param port the port that will be connected to
-     * @return true if successful connection; otherwise, return false
-     * @throws IOException handle exceptions upon invalid ip/hostname or connection takes too long
+     * Process hostname and convert it into IP format
+     * @param hostname the hostname to be process
+     * @return the ip address associated with the hostname
      */
-    public boolean connectToServer(String hostname, int port) throws IOException {
+    private String processHostname(String hostname) {
         // get localhost ip address
-        if (hostname.equals("localhost")) hostname = Inet4Address.getLocalHost().getHostAddress();
+        if (hostname.equals("localhost")) {
+            try {
+                hostname = Inet4Address.getLocalHost().getHostAddress();
+            }
+            catch (UnknownHostException e) {
+                System.out.println("Cannot get the IP address of localhost");
+            }
+        }
+
         // check if ip is valid or not
         else if (!IPv4_PATTERN.matcher(hostname).matches()) {
             try {
@@ -61,7 +67,7 @@ public class Client {
             }
             catch (UnknownHostException e) {
                 System.out.printf(invalidIPAndHostnameError, hostname);
-                return false;
+                return null;
             }
         }
 
@@ -69,47 +75,71 @@ public class Client {
         // check if the final result is an ip or not
         if (!IPv4_PATTERN.matcher(hostname).matches()) {
             System.out.printf(invalidIPAndHostnameError, hostname);
-            return false;
+            return null;
         }
 
-        // create a new socket that connect the client to server
-        // with in and out pathway for communication
-        try {
-            socket = new Socket(hostname, port);
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        }
-        catch (ConnectException e) {
-            System.out.println("Connection to \"" + hostname + "\" takes too long!");
-            return false;
+        return hostname;
+    }
+
+    /**
+     * Connect client to server
+     * @param hostname the hostname that will be connected to
+     * @param port the port that will be connected to
+     * @return true if successful connection; otherwise, return false
+     */
+    public boolean connectToServer(String hostname, int port) {
+        hostname = processHostname(hostname);
+
+        if (hostname != null) {
+            // create a new socket that connect the client to server
+            // with in and out pathway for communication
+            try {
+                socket = new Socket(hostname, port);
+                out = new PrintWriter(socket.getOutputStream(), true);
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            } catch (IOException e) {
+                System.out.println("Connection to \"" + hostname + "\" takes too long!");
+                return false;
+            }
+
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
      * Send message from client to server
      * @param msg the message that will be sent to server
      * @return the response from the server
-     * @throws IOException handle exceptions of the in and out pathways
      */
-    public String sendMessageToServer(String msg) throws IOException {
-        out.println(msg);
-        return in.readLine();
+    public String sendMessageToServer(String msg) {
+        try {
+            out.println(msg);
+            return in.readLine();
+        }
+        catch (IOException e) {
+            System.out.println("Cannot send message to server!");
+            return null;
+        }
     }
 
     /**
      * Close the client socket & in and out pathways
-     * @throws IOException handle exceptions of in, out, and socket
      */
-    public void closeClient() throws IOException {
-        in.close();
-        out.close();
-        socket.close();
+    public void closeClient() {
+        try {
+            in.close();
+            out.close();
+            socket.close();
+        }
+        catch (IOException e) {
+            System.out.println("Cannot close client!");
+        }
     }
 
     // Main method that will be used to execute Client side
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         System.out.println("Welcome to the KeyValue Service Client");
         System.out.print("Enter the IP address or Hostname of the server: ");
 
