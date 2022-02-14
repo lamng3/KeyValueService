@@ -50,6 +50,11 @@ public class Client {
      * @return the ip address associated with the hostname
      */
     private String processHostname(String hostname) {
+        if (hostname.equals("")) {
+            System.out.println("No IP address or Hostname found!");
+            return null;
+        }
+
         // get localhost ip address
         if (hostname.equals("localhost")) {
             try {
