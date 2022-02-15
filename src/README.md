@@ -170,6 +170,10 @@ does not matter anymore and can be left out
 ```[6, 7, 30, 5, 295]```, because the 30 part
 does not matter anymore and can be left out
 
+### Test bye()
+When I typed in "bye", the server responses ```See you later.```, which is shown in the client.
+Now both the server and client closes at the same time.
+
 ### Test multithreading
 - When I opened a new Terminal and type in ```java Client.java```, a message appears in the multithreaded server
 saying: ```Client [id] has connected to server!```
@@ -177,10 +181,6 @@ saying: ```Client [id] has connected to server!```
 - The problem in moving single-threaded application to multi-threaded application is how to unify database store amongst
 clients. I solved this by adding a single database to every sockets. This way will ensure that the database
 will be updated realtime and method calls will respond successfully.
-
-### Test bye()
-When I typed in "bye", the server responses ```See you later.```, which is shown in the client.
-Now both the server and client closes at the same time.
 
 ## How To Run
 You will first need to compile the code by running in Terminal the following script: ```javac KeyValueStore.java Client.java Server.java MultiThread.java```
