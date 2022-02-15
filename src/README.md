@@ -79,6 +79,17 @@ to get the value of that message. After that, the middle part will be the key.
 I will then return a list of params that will later on be used for server to respond 
 appropriately to client.
 
+#### Multithreading
+Since TCP server works by creating a new connection socket upon connection acceptance,
+I created a class called MultiThread in which for each client connected to a server, I assign an id to
+the socket and add the socket to the current server. 
+
+The client and the server will be communicating through a single port, in this case 5000. 
+
+I first developed single thread application, and then refractored it by extending my server with Thread
+class so that it can accept multiple sockets. The MultiThread class acts as a medium for clients to
+send messages to server.
+
 ## Testing
 
 Apart from testing invalid input to connect to a server, I will test most methods on localhost.
@@ -159,12 +170,20 @@ does not matter anymore and can be left out
 ```[6, 7, 30, 5, 295]```, because the 30 part
 does not matter anymore and can be left out
 
+### Test multithreading
+- When I opened a new Terminal and type in ```java Client.java```, a message appears in the multithreaded server
+saying: ```Client [id] has connected to server!```
+- I tested multithreading with put, get, mappings, keyset, and value switching back and forth between clients
+- The problem in moving single-threaded application to multi-threaded application is how to unify database store amongst
+clients. I solved this by adding a single database to every sockets. This way will ensure that the database
+will be updated realtime and method calls will respond successfully.
+
 ### Test bye()
 When I typed in "bye", the server responses ```See you later.```, which is shown in the client.
 Now both the server and client closes at the same time.
 
 ## How To Run
-You will first need to compile the code by running in Terminal the following script: ```javac KeyValueStore.java Client.java Server.java```
+You will first need to compile the code by running in Terminal the following script: ```javac KeyValueStore.java Client.java Server.java MultiThread.java```
 
-To test on localhost, you will first have to start your Server by running in Terminal: ```java Server.java```
+To test on localhost, you will first have to start your MultiThread by running in Terminal: ```java MultiThread.java```
 Then start the Client by running in Terminal: ```java Client.java```

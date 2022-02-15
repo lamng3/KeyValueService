@@ -9,13 +9,13 @@ import java.net.*;
 import java.util.*;
 
 // server for key-value service
-public class Server {
+public class Server extends Thread {
 
     // port that server and client will talk through
     private final int PORT = 5000;
 
-    // socket that will be created in the server
-    private ServerSocket serverSocket;
+    // id of the client that is connected to server
+    private int _id;
 
     // the socket that will then be accepted by the server socket
     private Socket socket;
@@ -27,7 +27,7 @@ public class Server {
     private BufferedReader in;
 
     // key-value store database
-    private final KeyValueStore kvs;
+    private static KeyValueStore kvs;
 
     // hash map that stores all types of messages with the number of parameters included along with it
     private final HashMap<String, Integer> messageTypes;
@@ -35,8 +35,9 @@ public class Server {
     /**
      * Constructor that creates the server
      */
-    public Server() {
-        this.kvs = new KeyValueStore();
+    public Server(Socket clientSocket, KeyValueStore kvs, int id) {
+        this.kvs = kvs;
+        this._id = id;
 
         // create the hash map and fill in all data
         this.messageTypes = new HashMap<>();
@@ -47,6 +48,9 @@ public class Server {
         messageTypes.put("keyset", 0);
         messageTypes.put("values", 0);
         messageTypes.put("bye", 0);
+
+        this.socket = clientSocket;
+        initServer(PORT);
     }
 
     /**
@@ -111,8 +115,8 @@ public class Server {
      */
     public void initServer(int port) {
         try {
-            serverSocket = new ServerSocket(port);
-            socket = serverSocket.accept();
+//            serverSocket = new ServerSocket(port);
+//            socket = serverSocket.accept();
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         }
@@ -214,7 +218,6 @@ public class Server {
         try {
             in.close();
             out.close();
-            serverSocket.close();
             socket.close();
         }
         catch (IOException e) {
@@ -222,27 +225,29 @@ public class Server {
         }
     }
 
-    // Main method that will be used to execute Server side
-    public static void main(String[] args) throws IOException {
-        // initialize the server
-        Server server = new Server();
-        server.initServer(server.PORT);
+    @Override
+    public void run() {
+        try {
+            initServer(PORT);
 
-        while (true) {
+            while (true) {
 
-            // message read from the client
-            String msg = server.in.readLine();
+                // message read from the client
+                String msg = in.readLine();
 
-            // sending response to client
-            boolean sentToClient = server.sendResponseToClient(msg);
+                // sending response to client
+                boolean sentToClient = sendResponseToClient(msg);
 
-            // handle case if response cannot be sent to client
-            if (!sentToClient) System.out.println("Invalid message to server!");
+                // handle case if response cannot be sent to client
+                if (!sentToClient) System.out.println("Invalid message to server!");
 
-            // terminate loop when the message is "bye"
-            if (msg.equals("bye")) break;
+                // terminate loop when the message is "bye"
+                if (msg.equals("bye")) break;
+            }
+
+            closeServer();
+        } catch (IOException e) {
+            System.out.println("Error in running server!");
         }
-
-        server.closeServer();
     }
 }

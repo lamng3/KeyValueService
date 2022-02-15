@@ -14,8 +14,8 @@ public class TestKVS {
 
     @Test
     public void validateIPAddress() {
-        Server server = new Server();
-        server.initServer(PORT);
+//        Server server = new Server();
+//        server.initServer(PORT);
     }
 }
 
