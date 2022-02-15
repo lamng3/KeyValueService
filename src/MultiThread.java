@@ -1,6 +1,13 @@
+/**
+ * @author: Lam Nguyen
+ * @id: ltn18
+ * @course: Computer Networks
+ */
+
 import java.io.*;
 import java.net.*;
 
+// class for multithreading server
 public class MultiThread {
     // key-value store database
     private static KeyValueStore kvs;
