@@ -4,9 +4,8 @@
 [REMOVED ISSUE] If we set open to false before printing out the response from server, the response may not be shown on the screen
 [RESOLVED] Cannot connect to other host other than localhost (resolved by adding a regex matcher check)
 [REMOVED ISSUE] how to enable re-enter ip address or hostname (may not need this)
-
-[URGENT] Multi-threading and Multi-processing to serve multiple clients at the same time
+[RESOLVED] Multi-threading and Multi-processing to serve multiple clients at the same time
     - When Client connects to Server, we need to create a new Thread for it
     - This happens maybe after the accept() method?
     - And maybe we need multiple sockets instead of universal socket
-
+-> This requires refractoring code by extending server with Thread and then creating a new MultiThread class
