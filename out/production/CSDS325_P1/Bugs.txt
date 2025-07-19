@@ -1,2 +1,0 @@
-Connection reset after first call to server (resolved by while loop)
-Cannot show multiple lines on client side
